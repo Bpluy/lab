@@ -9,7 +9,6 @@
 #include "Corvette.h"
 #include "Sailboat.h"
 #include "Steamboat.h"
-#include "nlohmann/json.hpp"
 
 Ship* ship;
 int shipType;
