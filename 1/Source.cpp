@@ -2,34 +2,63 @@
 #include <random>
 #include <iomanip>
 #include <bitset>
+#include <conio.h>
 
-#define Num 10
+//30.«еркально помен€ть местами тетрады четных чисел.
 
 using namespace std;
-int tetrchanger(int a)
+
+int ChangeTetrads(int a)
 {
 	int b = 0;
+	int mask = 0x0f;
 	for (int i = 7; i >= 0; i--)
-		b += (((a << (28 - 4 * i)) >> 28) & 15) << (28 - 4 * i);
+		b += (((a << (28 - 4 * i)) >> 28) & mask) << (28 - 4 * i);
 	return b;
+}
+
+int GetRandom()
+{
+	static random_device rd;
+	static mt19937 gen(rd());
+	static uniform_int_distribution<> dist(-2147483648, 2147483647);
+	return dist(gen);
+}
+
+void Output(int* MasInput,int* MasOutput,int num)
+{
+	for (int i = 0; i < num; i++)
+	{
+		cout << "Input:  DEC " 
+			 << dec << setw(11) << MasInput[i] << " | HEX " 
+			 << hex << setw(8) << MasInput[i] << " | BYTE " 
+			 << bitset<32>(MasInput[i]) << "\n"
+			 << "Output: DEC " 
+			 << dec << setw(11) << MasOutput[i] << " | HEX " 
+			 << hex << setw(8) << MasOutput[i] << " | BYTE " 
+			 << bitset<32>(MasOutput[i]) << "\n"
+			 << "------------------------------------------------------------------------------\n";
+	}
 }
 
 int main()
 {
-	random_device rd;
-	mt19937 gen(rd());
-	uniform_int_distribution<> dist(-2147483648, 2147483647);
+	int num;
+	cout << "Type numbers for processing\n";
+	cin >> num;
 
-	int Input[Num],Output[Num];
-	for (int i = 0; i < Num; i++)
+	int* MasInput=new int[num];
+	int* MasOutput=new int[num];
+
+	for (int i = 0; i < num; i++)
 	{
-		Input[i] = dist(gen);
-		if (Input[i] % 2 == 0)
-			Output[i] = tetrchanger(Input[i]); 
+		MasInput[i] = GetRandom();
+		if ((MasInput[i] & 1) == 0)
+			MasOutput[i] = ChangeTetrads(MasInput[i]);
 		else 
-			Output[i] = Input[i];
-		cout << "Input:  DEC " << dec << setw(11) << Input[i] << " | HEX " << hex << setw(8) << Input[i] << " | BYTE " << bitset<32>(Input[i]) << "\n";
-		cout << "Output: DEC " << dec << setw(11) << Output[i] << " | HEX " << hex << setw(8) << Output[i] << " | BYTE " << bitset<32>(Output[i]) << "\n";
-		cout << "------------------------------------------------------------------------------\n";
+			MasOutput[i] = MasInput[i];
 	}
+	Output(MasInput, MasOutput,num);
+	delete[] MasInput;
+	delete[] MasOutput;
 }
